@@ -1,4 +1,5 @@
 import { getValue } from '@testing-library/user-event/dist/utils'
+import axios from 'axios'
 import React, { use, useState } from 'react'
 
 const Form = () => {
@@ -51,6 +52,37 @@ const Form = () => {
     }
 
   }
+
+  function save_data(){
+try {
+  let url = "https://685b889b89952852c2d9dd3d.mockapi.io/users";
+  axios.post(url,{
+    name: name,
+    email : email,
+    password: password,
+    phone: phone,
+    gender:gender,
+    hobby:hobby,
+
+  }
+
+  ).then(() => {
+    alert("Data Saved Successfully")
+    setName("");
+    setEmail("");
+    setPassword("");
+    setGender("");
+    setHobby("");
+    setCity("");
+  })
+
+  
+} catch (error) {
+  console.log(error.message)
+  
+}
+  }
+
 
   return (
     <div className="container">
@@ -148,7 +180,7 @@ const Form = () => {
 
 
 
-        <button className="btn btn-primary" onClick={getValue}>Submit</button>
+        <button className="btn btn-primary" onClick={save_data}>Submit</button>
       </div>
     </div>
   )
