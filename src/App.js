@@ -6,6 +6,7 @@ import Counter from './Counter';
 import Form from './Form';
 import Array from './Array';
 import Login from './Login';
+import { Fr } from './Fr';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
     <Route path='/f' element={<Form/>} />
     <Route path='/arr' element={<Array/>} />
     <Route path='/l' element={<Login/>}/>
+    <Route path='/fr' element={<Fr/>} />
 
 
     </Routes>

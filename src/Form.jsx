@@ -1,6 +1,9 @@
 import { getValue } from '@testing-library/user-event/dist/utils'
+import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
 import React, { use, useState } from 'react'
+import { ToastContainer, toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
 const Form = () => {
   const [name, setName] = useState("")
@@ -43,6 +46,14 @@ const Form = () => {
     }
 
   }
+  function clear(){
+    setName("");
+    setEmail("");
+    setPassword("");
+    setGender("");
+    setHobby("");
+    setCity("");
+  }
 
   function FileUpload(e) {
     let image = e.target.files[0]
@@ -53,9 +64,26 @@ const Form = () => {
 
   }
 
-  function save_data(){
+  function save_data(){ 
 try {
   let url = "https://685b889b89952852c2d9dd3d.mockapi.io/users";
+  let uname_regex = /^[a-zA-Z_]{3,16}$/
+  let passw_regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+
+
+  if(!name || !email || !password || !phone || !gender || !hobby){
+    toast.error("All Fields Are Required");
+    return;
+  }
+
+  if (!uname_regex.test(name)){
+    toast.error("Username is invalid");
+    return;
+  }
+  if (!passw_regex.test(password)){
+    toast.error("Password must be greater than or 8 , must be special number")
+    return;
+  }
   axios.post(url,{
     name: name,
     email : email,
@@ -67,13 +95,8 @@ try {
   }
 
   ).then(() => {
-    alert("Data Saved Successfully")
-    setName("");
-    setEmail("");
-    setPassword("");
-    setGender("");
-    setHobby("");
-    setCity("");
+    toast.success("Data Saved Successfully")
+    clear();
   })
 
   
@@ -85,9 +108,19 @@ try {
 
 
   return (
+    
     <div className="container">
+      <ToastContainer/>
       <h1>Registration Form</h1>
       <hr />
+      <div> 
+      <Link
+          type="button"
+          class="btn btn-primary"
+          to="/fr"
+        >Show Records</Link>
+          
+      </div>
       <div className="form-control">
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label">User Name</label>
