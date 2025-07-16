@@ -1,57 +1,68 @@
-import axios from 'axios'
-import React, { useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import z from 'zod'
 
 export const Create = () => {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [passw, setPassw] = useState("")
-  const [age, setAge] = useState(1)
+  const registerSchema = z.object({
+    Name: z.string().min(3, "Name is Required and must be atleast 3 characters"),
+    Email: z.string().email("Invalid Email Address"),
+    Passw: z.string().min(8, "Password Must be Atleast 6 Characters"),
+    Age: z.coerce.number().min(1, "Age Must Be Positive Number")
+  });
 
-  async function SubmitFunc(){
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(registerSchema)
+  });
+
+  const onSubmit = async (data) => {
     try {
-      await axios.post("http://localhost:3008/save",{
-      Name: name,
-      Email: email,
-      Passw: passw,
-      Age:age
+      await axios.post("http://localhost:3008/save", data)
+      alert("User Registered Succesfully");
+      reset()
 
-
-      }).then(() => {
-        alert("Data Saved Succesfully")
-      }).catch((e)=> {
-        console.log(e.message)
-      })
-      
     } catch (error) {
-      console.log(error)
-      
-    }
+      console.error("Submission Error:", error.message);
+      alert("Failed To Save User")
 
+    }
   }
+
   return (
     <div>
-         <div class="container mt-5">
-    <h2>Registration Form</h2>
-    <form>
-      <div class="mb-3">
-        <label for="name" class="form-label">Name</label>
-        <input type="text" class="form-control" id="name" placeholder="Enter your name" value={name} onChange={(e)=> setName(e.target.value)}/>
+      <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow rounded">
+        <h2 className="text-2xl font-bold m-6 text-center">Registration Form</h2>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div>
+            <label for="name" className="block mb-1 font-medium">Name</label>
+            <input {...register("Name")} type="text" className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" id="name" placeholder="Enter your name" />
+            {errors.Name && <p className="text-red-500 text-sm">{errors.Name.message} </p>}
+
+          </div>
+          <div class="mb-3">
+            <label for="email" className="block mb-1 font-medium">Email address</label>
+            <input {...register("Email")} type="email" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" id="email" placeholder="Enter your email" />
+            {errors.Email && <p className="text-red-500 text-sm">{errors.Email.message} </p>}
+          </div>
+          <div class="mb-3">
+            <label for="password" className="block mb-1 font-medium">Password</label>
+            <input {...register("Passw")} type="password" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" placeholder="Enter your password" />
+            {errors.Passw && <p className="text-red-500 text-sm">{errors.Passw.message} </p>}
+          </div>
+          <div class="mb-3">
+            <label for="age" className="block mb-1 font-medium">Age</label>
+            <input {...register("Age")} type="number" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" id="age" placeholder="Enter your age" />
+            {errors.Age && <p className="text-red-500 text-sm">{errors.Age.message} </p>}
+          </div>
+          <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" >Submit</button>
+        </form>
       </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="email" placeholder="Enter your email" value={email} onChange={(e)=> setEmail(e.target.value)}/>
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" placeholder="Enter your password" value={passw} onChange={(e)=> setPassw(e.target.value)}/>
-      </div>
-      <div class="mb-3">
-        <label for="age" class="form-label">Age</label>
-        <input type="number" class="form-control" id="age" placeholder="Enter your age" value={age} onChange={(e)=> setAge(e.target.value)}/>
-      </div>
-      <button type="button" class="btn btn-primary" onClick={SubmitFunc}>Submit</button>
-    </form>
-  </div>
 
     </div>
   )
